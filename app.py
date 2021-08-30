@@ -1,8 +1,7 @@
 from flask import Flask
 from flask_restful import Api
-from flask_jwt import JWT
-from Security import authenticate, identity
-from resources.user import UserRegister, User
+from flask_jwt_extended import JWTManager
+from resources.user import UserRegister, User, UserLogin
 from resources.item import Item, ItemList
 from resources.store import Store, StoreList
 
@@ -13,10 +12,10 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # Turns off Flask SQLALCHEMY_TRACK_MODIFICATIONS but does not turn off SQLALCHEMY SQLALCHEMY_TRACK_MODIFICATIONS tracker
 app.config['PROPAGATE_EXCEPTIONS'] = True
 # Allows flask extensions to raise their own exceptions
-app.secret_key = 'jose'
+app.secret_key = 'jose'  # app.config['JWT_SECRET_KEY']
 api = Api(app)
 
-jwt = JWT(app, authenticate, identity)  # creates new end port : /auth. When called, we send username & password
+jwt = JWTManager(app)  # creates new end port : /auth. When called, we send username & password
 
 api.add_resource(Store, '/store/<string:name>')
 api.add_resource(Item, '/item/<string:name>')  # https://127.0.0.1:5000/item/car
@@ -24,6 +23,7 @@ api.add_resource(ItemList, '/items')
 api.add_resource(StoreList, '/stores')
 api.add_resource(UserRegister, '/register')
 api.add_resource(User, '/user/<int:user_id>')
+api.add_resource(UserLogin, '/login')
 
 if __name__ == '__main__':  # if main, run the app. if not, don't run app
     from db import db
