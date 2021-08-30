@@ -28,7 +28,7 @@ class Item(Resource):
             return {'message': "Item with name '{}' already exists.".format(name)}, 400
         # data = request.get_json()  # force-True - Do not need content type header. silent-True, returns None
         data = Item.parser.parse_args()
-        item = ItemModel(name, data['price'], data['store_id'])
+        item = ItemModel(name, **data)
 
         try:
             item.save_to_db()
@@ -50,7 +50,7 @@ class Item(Resource):
         item = ItemModel.find_by_name(name)
 
         if item is None:  # Try to insert, given item doesnt exist
-            item = ItemModel(name, data['price'], data['store_id'])  # create a new one
+            item = ItemModel(name, **data)  # create a new one
         else:
             item.price = data['price']
         item.save_to_db()
@@ -60,5 +60,5 @@ class Item(Resource):
 
 class ItemList(Resource):
     def get(self):
-        return {'items': [item.json() for item in ItemModel.query.all()]}
+        return {'items': [item.json() for item in ItemModel.find_all()]}
         # Alternative : return {'items': list(map(lambda x: x.json(), ItemModel.query.all()))}

@@ -17,7 +17,7 @@ class StoreModel(db.Model):
         self.name = name
 
     def json(self):  # return json representation of model - A dictionary of item
-        return {'name': self.name, 'items': [item.json() for item in self.items.all()]}
+        return {'id': self.id, 'name': self.name, 'items': [item.json() for item in self.items.all()]}
 
     @classmethod  # Returns object of type item model
     def find_by_name(cls, name, ):
@@ -26,6 +26,10 @@ class StoreModel(db.Model):
         # SAME AS ABOVE: SELECT * FROM items WHERE name=name
         # return ItemModel.query.filter_by(name=name).first()
         # SAME AS ABOVE: SELECT * FROM items WHERE name=name LIMIT 1 - returns first row only
+
+    @classmethod
+    def find_all(cls):
+        return cls.query.all()
 
     def save_to_db(self):
         db.session.add(self)
